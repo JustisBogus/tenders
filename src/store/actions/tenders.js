@@ -1,6 +1,7 @@
 import { requests } from '../../agent';
 import { CLICK, TENDER_LIST_REQUEST, TENDER_LIST_RECEIVED, TENDER_LIST_ERROR,
-    TENDER_LIST_SET_PAGE, REMOVE_TENDER, ADD_NEW_TENDER_TITLE, ADD_NEW_TENDER_DESCRIPTION } from './actionTypes';
+    TENDER_LIST_SET_PAGE, REMOVE_TENDER, ADD_NEW_TENDER_TITLE, 
+    ADD_NEW_TENDER_DESCRIPTION, EDIT_TENDER, SHOW_NEW_TENDER_BUTTON } from './actionTypes';
 
 export const click = (buttonClicked) => {
     return {
@@ -15,7 +16,7 @@ export const tenderListFetch = (page = 1) => {
         return requests.get(`/tenders?page=${page}`)
             .then(response => dispatch(tenderListReceived(response)))
             .catch(error => dispatch(tenderListError(error)));
-    }
+    };
 };
 
 export const tenderListRequest = () => {
@@ -45,19 +46,38 @@ export const tenderListSetPage = (page) => {
     };
 };
 
-export const deleteTender = (id) => {
+export const editTender = (id, title, description, updatedTenders) => {
+    return {
+        type: EDIT_TENDER,
+        id, 
+        title, 
+        description, 
+        updatedTenders
+    }    
+}
+
+export const updateTender = (id, title, description, updatedTenders) => {
     return (dispatch) => {
-        dispatch(removeTender(id));
-        return requests.delete(`/tenders/${id}`)
-          .then(() => dispatch(deleteTender(id)));
-      }
+        return requests.put(`/tenders/${id}`, {
+            title, 
+            description
+        }).then(() => dispatch(editTender(id, title, description, updatedTenders)));
+    };
 };
 
-export const removeTender = (tender) => {
+export const deleteTender = (id, tender) => {
+    return (dispatch) => {
+        return requests.delete(`/tenders/${id}`)
+        .then(() => dispatch(removeTender(id, tender)));
+      };
+};
+
+export const removeTender = (id, tender) => {
     return {
         type: REMOVE_TENDER,
+        id,
         tender
-    }
+    };
 };
 
 export const addNewTenderTitle = (title) => {
@@ -75,11 +95,15 @@ export const addNewTenderDescription = (description) => {
 };
 
 export const addNewTender = (title, description) => {
-        return requests.post(
-          '/tenders',
-          {
+        return requests.post('/tenders', {
             title,
             description
-          }
-        )
+    });
+};
+
+export const showNewTenderButton = (button) => {
+    return {     
+        type: SHOW_NEW_TENDER_BUTTON,
+        button
+    };
 };

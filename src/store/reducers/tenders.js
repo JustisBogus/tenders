@@ -8,7 +8,9 @@ const initialState = {
     currentPage: 1,
     pageCount: null,
     newTenderTitle: '',
-    newTenderDescription: ''
+    newTenderDescription: '',
+    showNewTenderSaveButton: false,
+    newTenderMessage: ''
     
 }
 
@@ -56,6 +58,16 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                     newTenderDescription: action.description
+                        };
+        case actionTypes.SHOW_NEW_TENDER_BUTTON:
+            return {
+                ...state,
+                    showNewTenderSaveButton: action.button
+                        };
+        case actionTypes.EDIT_TENDER:
+            return {
+                ...state,
+                    tenders: action.updatedTenders,
                         };
         default: 
             return state;

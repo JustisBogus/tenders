@@ -12,6 +12,9 @@ export const requests = {
     post: (url, body = null) => {
         return superagent.post(`${API_ROOT}${url}`, body).then(responseBody);
     },
+    put: (url, body = null) => {
+        return superagent.put(`${API_ROOT}${url}`, body).then(responseBody);
+    },
     delete: (url) => {
         return superagent.del(`${API_ROOT}${url}`).then(responseBody);
     },

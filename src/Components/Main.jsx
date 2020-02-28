@@ -4,7 +4,8 @@ import Paginator from './UI/Paginator';
 import { NavLink } from 'react-router-dom';
 import './Main.scss';
 import { connect } from 'react-redux';
-import { click, tenderListFetch, tenderListSetPage, deleteTender } from '../store/actions/tenders';
+import { click, tenderListFetch, tenderListSetPage, deleteTender, 
+    updateTender} from '../store/actions/tenders';
 
 const mapStateToProps = state => {
     return {
@@ -16,19 +17,14 @@ const mapDispatchToProps = {
         click,
         tenderListFetch,
         tenderListSetPage,
-        deleteTender
+        updateTender,
+        deleteTender,
 }
 
 class Main extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { 
-        };
-    }
 
     componentDidMount() {
         this.props.tenderListFetch();
-        document.body.style.background = "#eee";
     }
 
     componentDidUpdate(prevProps) {
@@ -43,20 +39,6 @@ class Main extends Component {
         return Number(this.props.match.params.page) || 1;
     }
 
-    toggleClick() {
-        let buttonClicked = this.props.clicked;
-        if (buttonClicked) {
-            buttonClicked = false
-            document.body.style.background = "#eee"
-            console.log(this.props.tenders);
-        } else {
-            buttonClicked = true;
-            document.body.style.background = "#121212"
-            console.log(this.props.tenders);
-        }
-        this.props.click(buttonClicked);
-    }
-
     changePage(page) {
         const {tenderListSetPage} = this.props;
         tenderListSetPage(page);
@@ -69,27 +51,23 @@ class Main extends Component {
     }
 
     onPrevPageClick = (e) => {
-        const {currentPage} =this.props;
+        const {currentPage} = this.props;
         const newPage = Math.max(currentPage -1, 1);
         this.changePage(newPage);
     }
 
-    editTender = (id) => {
-        
+    onEditTender = (id, title, description) => {
+        const { updateTender, tenders} = this.props
+        const updatedTenders = tenders.map(tender => (tender.id === id ? {...tender, title, description} : tender));
+        updateTender(id, title, description, updatedTenders);
     }
 
-    deleteTender = (id) => {
+    onDeleteTender = (id) => {
         let {tenders, deleteTender} = this.props;
         tenders = tenders.filter((tender) => {
             return tender.id !== id
         });
-        deleteTender(tenders);
-/*
-        const requestOptions = {method: 'DELETE'};
-        fetch("http://localhost:8000/api/tenders/" + id, requestOptions).then((response) => {
-            return response.json();
-          }).then((result) => {});
-          */
+        deleteTender(id, tenders);
     }
      
     render() {
@@ -111,7 +89,8 @@ class Main extends Component {
                    return <Tender
                         key={tender.id}
                         tender={tender}
-                        delete={this.deleteTender}
+                        edit={this.onEditTender}
+                        delete={this.onDeleteTender}
                     />
                 })
             );
@@ -132,9 +111,8 @@ class Main extends Component {
             <div className="container">
                 <NavLink
                     to="/newtender">
-                     <div  class="btn-floating btn-large waves-effect waves-light blue"><i class="material-icons">add</i></div>
+                     <div  className="btn-floating btn-large waves-effect waves-light blue"><i className="material-icons">add</i></div>
                 </NavLink>
-                <div className="button" onClick={() => this.toggleClick()}>Click</div>
                 {content}
                <div>
                 {paginator}

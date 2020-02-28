@@ -3,11 +3,14 @@ import React, { Component } from 'react';
 class Paginator extends Component {
     constructor(props) {
         super(props);
-        const {pageCount} = this.props;
+        const {pageCount, currentPage} = this.props;
         this.range = [];
 
         for (let i = 1; i <= pageCount; i++) {
-            this.range.push(i);
+            if ((i <= currentPage && i > (currentPage - 10)) 
+                || (i >= currentPage && i < (currentPage + 10))) {
+                this.range.push(i);
+            }    
         };
     }
         
