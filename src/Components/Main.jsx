@@ -42,15 +42,15 @@ class Main extends Component {
     changePage(page) {
         const {tenderListSetPage} = this.props;
         tenderListSetPage(page);
-      }
+    }
 
-    onNextPageClick = (e) => {
+    onNextPageClick = () => {
         const {currentPage, pageCount} = this.props;
         const newPage = Math.min(currentPage + 1, pageCount);
         this.changePage(newPage);
     }
 
-    onPrevPageClick = (e) => {
+    onPrevPageClick = () => {
         const {currentPage} = this.props;
         const newPage = Math.max(currentPage -1, 1);
         this.changePage(newPage);
